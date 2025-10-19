@@ -1,6 +1,7 @@
 package calculator;
 
 import camp.nextstep.edu.missionutils.Console;
+import java.util.regex.Pattern;
 
 public class Application {
     public static void main(String[] args) {
@@ -17,7 +18,9 @@ public class Application {
         }
 
         String delimiterRegex = "[,:]";
-        String numbersInput = input;
+        String numbersInput = input.replace("\\n", "\n");
+
+        String delimiterChar = ",:";
 
         if (numbersInput.startsWith("//")) {
             int index = numbersInput.indexOf('\n');
@@ -26,8 +29,24 @@ public class Application {
             }
 
             String customDelimiter = numbersInput.substring(2, index);
+
+            if (customDelimiter.equals(".")) {
+                customDelimiter = "\\.";
+            }
+
             delimiterRegex = "[,:]|" + customDelimiter;
+
+            delimiterChar = delimiterChar + numbersInput.substring(2, index);
+
             numbersInput = numbersInput.substring(index + 1);
+        }
+
+        String allowedPattern = "[0-9a-zA-Z\\- " + Pattern.quote(delimiterChar) + "]*";
+
+        if (!numbersInput.matches(allowedPattern)) {
+            if (!numbersInput.matches("[0-9a-zA-Z\\- " + Pattern.quote(delimiterChar) + "]*")) {
+                throw new IllegalArgumentException("잘못된 구분자를 입력하셨습니다.");
+            }
         }
 
         String[] numbers = numbersInput.split(delimiterRegex);
@@ -40,7 +59,13 @@ public class Application {
                 throw new IllegalArgumentException("빈 값은 입력할 수 없습니다.");
             }
 
-            int value = Integer.parseInt(trimmedNum);
+            int value;
+            try {
+                value = Integer.parseInt(trimmedNum);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("숫자만 입력해 주세요.");
+            }
+
             if (value < 0) {
                 throw new IllegalArgumentException("입력은 양수만 가능합니다.");
             }
