@@ -34,7 +34,18 @@ public class Application {
 
         int sum = 0;
         for (String num : numbers) {
-            sum += Integer.parseInt(num);
+            String trimmedNum = num.trim();
+
+            if (trimmedNum.isEmpty()) {
+                throw new IllegalArgumentException("빈 값은 입력할 수 없습니다.");
+            }
+
+            int value = Integer.parseInt(trimmedNum);
+            if (value < 0) {
+                throw new IllegalArgumentException("입력은 양수만 가능합니다.");
+            }
+
+            sum += value;
         }
 
         return sum;
